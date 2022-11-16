@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf=8">
+        <title>Visualize:</title>
+        <blockquote>
+
+        </blockquote>
+    </head>
+    <body>
+        // #pragma once
+        #include <stdlib.h>
+
+        // dependencias de teste
+        #include <string>
+        #include <stderr>
+
+
+        using namespace std;
+
+
+        namespace dict {
+            template<typename TI, typename TK>
+            struct item {
+                TI ptr_item;
+                TK chave;
+                
+                struct item<TI, TK>* ptr_proximo_item;
+                struct item<TI, TK>* ptr_anterior_item;
+            };
+            
+            
+            template<typename TI, typename TK>
+            class Dict {
+                private:
+                    unsigned int tamanho;
+                    struct item<TI, TK>* primeiro_item;
+                    struct item<TI, TK>* ultimo_item;
+                public:
+                    // constructor
+                    Dict(void);
+                    
+                    // adicionar item
+                    void adicionar(TI, TK);
+                    
+                    // funcao de match
+                    void zip(TI*, TK*, int);
+                    
+                    // acessar item
+                    TI operator [] (TK);
+            };
+            
+            
+            template<typename TI, typename TK>
+            Dict<TI, TK>::Dict(void) {
+                this->primeiro_item = nullptr;
+                this->ultimo_item = nullptr;
+            }
+            
+            
+            template<typename TI, typename TK>
+            void Dict<TI, TK>::adicionar(TI ptr_item, TK key) {
+                printf("?");
+                item<TI, TK>* ptr_struct_item = (item<TI, TK>*)malloc(sizeof(item<TI, TK>));
+                if (ptr_struct_item == NULL) {
+                    perror("malloc trollou");
+                    exit(-1);
+                }
+                printf("?");
+                (*ptr_struct_item).chave = key;
+                printf("?");
+                if (this->primeiro_item == nullptr) {
+                    // setta o ponteiro do item
+                    ptr_struct_item->ptr_item = ptr_item;
+                    
+                    // efeito do constructor
+                    ptr_struct_item->ptr_proximo_item = nullptr;
+                    ptr_struct_item->ptr_anterior_item = nullptr;
+                    
+                    this->primeiro_item = ptr_struct_item;
+                    this->ultimo_item = ptr_struct_item;
+                } else {
+                    // setta o ponteiro do item
+                    ptr_struct_item->ptr_item = ptr_item;
+                    
+                    // efeito do constructor
+                    ptr_struct_item->ptr_proximo_item = nullptr;
+                    ptr_struct_item->ptr_anterior_item = this->ultimo_item;
+                    
+                    this->ultimo_item->ptr_proximo_item = ptr_struct_item;
+                    this->ultimo_item = ptr_struct_item;
+                }
+            }
+            
+            
+            template<typename TI, typename TK>
+            void Dict<TI, TK>::zip(TI* array_itens, TK* array_chaves, int qntd_matchs) {
+                TI item_atual;
+                //if (array_chaves == nullptr) {
+                //	for (int i = 0; i < qntd_matchs; i++) {
+                //		ptr_item_atual =  array_itens[i];
+                //		Dict::adicionar(ptr_item_atual, i);
+                //	}
+                //} else {
+                for (int i = 0; i < qntd_matchs; i++) {
+                    item_atual = array_itens[i];
+                    // printf("?");
+                    Dict::adicionar(item_atual, array_chaves[i]);
+                    // printf("!");
+                }
+                //}
+            }
+            
+            
+            template<typename TI, typename TK>
+            TI Dict<TI, TK>::operator [] (TK chave) {
+                item<TI, TK>* ptr_item_atual = this->primeiro_item;
+                int chave_item_atual;
+                
+                for (int i = 0; i < this->tamanho; i++) {
+                    chave_item_atual = ptr_item_atual->chave;
+                    
+                    if (chave_item_atual == chave) {
+                        return ptr_item_atual->ptr_item;
+                    }
+                    
+                    ptr_item_atual = ptr_item_atual->ptr_proximo_item;
+                }
+            }
+        }
+
+
+        int main() {
+            dict::Dict<float, string> atributos;
+            
+            int qntd_itens = 5;
+            
+            float itens[qntd_itens] = {0, 0, 0, 0, 0};
+            string chaves[qntd_itens] = {"a", "b", "c", "d", "e"};
+            
+            atributos.zip(itens, chaves, qntd_itens);
+            
+            
+            return 0;
+        }
+    </body>
+</html>
